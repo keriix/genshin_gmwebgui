@@ -61,6 +61,17 @@
 			</div>
 		</section>
 		
+		<section>
+			<div class="container">
+				<div class="columns is-multiline is-centered is-vcentered">
+					<div class="column is-narrow"><button class="button is-info frequentBtn" data-cmd="hcoin 1000">Primogem 1000</button></div>
+					<div class="column is-narrow"><button class="button is-info frequentBtn" data-cmd="scoin 100000">Mora 100,000</button></div>
+					<div class="column is-narrow"><button class="button is-info frequentBtn" data-cmd="item add <id> <amount>">Add item</button></div>
+					<div class="column is-narrow"><button class="button is-info frequentBtn" data-cmd="avatar add <id>">Add character</button></div>
+				</div>
+			</div>
+		</section>
+		
 		<section class="section">
 			<div class="container">
 				<div class="columns">
@@ -108,7 +119,9 @@
 		let $notificationBox = $('#notificationBox');
 		let $notificationText = $('#notificationText');
 		let $urlText = $('#urlText');
+		
 		let $submitBtn = $('#submitBtn');
+		
 		let uid;
 		let cmd;
 		
@@ -127,9 +140,16 @@
 			$('#uidText').text(val);
 		});
 		
-		$commandInput.on('keyup', function(){
+		$commandInput.on('keyup change', function(){
 			let val = $(this).val();
 			$('#commandText').text(val);
+		});
+		
+		$('.frequentBtn').on('click', function(e){
+			e.preventDefault();
+			
+			let btnCmd = $(this).attr('data-cmd');
+			$commandInput.val(btnCmd);
 		});
 		
 		$('#submitBtn').on('click', function(e){
