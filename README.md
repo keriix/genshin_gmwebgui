@@ -2,8 +2,8 @@
 I created this web UI for GM commands so i don't have to type commands into the url every single time i want to use a command for my character lol
 
 This should be used with the docker version of GIO.
-
 https://forum.ragezone.com/threads/genshin-impact-3-2-docker-server-tutorial.1210198/
+
 
 You can view commands here : https://doc.yuuki.me/docs/commands/gio
 
