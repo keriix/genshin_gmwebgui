@@ -8,7 +8,7 @@ This should be used with the docker version of GIO.
 2. Run this command in the directory of this folder
    `docker run -d --name genshin_gmwebgui -p 64999:80 -v ${PWD}:/var/www/html php:7.2-apache`
 
-3. Go to your browser and enter 'localhost:64999'
+3. Go to your browser and enter `localhost:64999`
 
 # To-do list
 - Add frequently used commands as buttons
