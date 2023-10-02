@@ -12,6 +12,7 @@ There is a GM Handbook as well : https://doc.yuuki.me/GMHandbook
 # How to use?
 1. Have docker desktop
 2. Run this command in the directory of this folder
+   
    `docker run -d --name genshin_gmwebgui -p 64999:80 -v ${PWD}:/var/www/html php:7.2-apache`
 
-3. Go to your browser and enter `localhost:64999`
+4. Go to your browser and enter `localhost:64999`
