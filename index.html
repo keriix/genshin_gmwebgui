@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Genshin Web GM Gui</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+	<link rel="stylesheet" type="text/css" href="https://unpkg.com/bulma-prefers-dark" />
+	<link rel="icon" href="./favicon.ico" type="image/x-icon">
+	<style>
+		.custom-py {
+			.column {
+				padding-top: 0;
+				padding-bottom: .25em;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<section class="section">
+		<div class="container has-text-centered">
+			<h1 class="title">Genshin GM Web Gui</h1>
+		</div>
+	</section>
+  
+	<form>
+		<section class="section">
+			<div class="container">
+			
+				<div class="columns">
+					<div class="column is-6">
+						<div class="columns is-multiline is-centered is-vcentered custom-py pb-5">
+							<div class="column is-narrow">
+								<label class="label">Server IP</label>
+							</div>
+							<div class="column is-8">
+								<input id="ipInput" name="ipInput" class="input" type="text" placeholder="Default: localhost">
+							</div>
+							<div class="column is-12 has-text-centered">
+								<p class="help">Note: Leave empty if default, otherwise set to your server IP</p>
+							</div>
+						</div>
+					</div>
+					
+					<div class="column is-6">
+						<div class="columns is-multiline is-centered is-vcentered custom-py">
+							<div class="column is-narrow">
+								<label class="label">MUIP Port</label>
+							</div>
+							<div class="column is-8">
+								<input id="muipInput" name="muipInput" class="input" type="text" placeholder="Default: 10106">
+							</div>
+							<div class="column is-12 has-text-centered">
+								<p class="help">Note: Leave empty if default, otherwise set to your MUIP Server port</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		
+		<section class="section">
+			<div class="container">
+				<div class="columns">
+					<div class="column is-2">
+						<input id="uidInput" name="uidInput" class="input" type="text" placeholder="Player UID">
+					</div>
+					
+					<div class="column is-8">
+						<input id="commandInput" name="commandInput" class="input" type="text" placeholder="Command">
+					</div>
+					
+					<div class="column is-2"><button id="submitBtn" class="button is-fullwidth is-primary">Submit</button></div>
+				</div>
+			</div>
+		</section>
+	</form>
+	
+	<section class="section has-text-centered pt-0">
+		<div class="container">
+			<p class="mb-2">This is what your command looks like</p>
+			<p id="urlText">
+				<span id="ipText" class="has-text-primary">localhost</span>:<span id="muipText" class="has-text-primary">10106</span>/api?region=dev_docker&ticket=GM&cmd=1116&uid=<span id="uidText" class="has-text-primary"></span>&msg=<span id="commandText" class="has-text-primary"></span>
+			</p>
+		</div>
+	</section>
+	
+	<section class="section has-text-centered">
+		<div class="container">
+			<div id="notificationBox" class="notification" style="display: none;">
+				<span id="notificationText"></span>
+			</div>
+		</div>
+	</section>
+	
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+	<script>
+		//clear input on load since browser likes to cache
+		$('.input').val('');
+		
+		let $ipInput = $('#ipInput');
+		let $muipInput = $('#muipInput');
+		let $uidInput = $('#uidInput');
+		let $commandInput = $('#commandInput');
+		let $notificationBox = $('#notificationBox');
+		let $notificationText = $('#notificationText');
+		let $urlText = $('#urlText');
+		let $submitBtn = $('#submitBtn');
+		let uid;
+		let cmd;
+		
+		$ipInput.on('keyup', function(){
+			let val = $(this).val();
+			$('#ipText').text(val);
+		});
+		
+		$muipInput.on('keyup', function(){
+			let val = $(this).val();
+			$('#muipText').text(val);
+		});
+		
+		$uidInput.on('keyup', function(){
+			let val = $(this).val();
+			$('#uidText').text(val);
+		});
+		
+		$commandInput.on('keyup', function(){
+			let val = $(this).val();
+			$('#commandText').text(val);
+		});
+		
+		$('#submitBtn').on('click', function(e){
+			e.preventDefault();
+			
+			uid = $uidInput.val();
+			cmd = $commandInput.val();
+			let pass = true;
+			
+			if (uid == '' || cmd == ''){
+				showNotificationBox('Player UID and Command cannot be empty!!', false);
+				pass = false;
+			}
+			
+			if (pass){
+				let url = $urlText.text().trim();
+				
+				hideNotificationBox();
+				allowInputState(false);
+				
+				$.ajax({
+					url: 'process.php',
+					method: "POST",
+					dataType: 'json',
+					data: {
+						ip: $ipInput.val(),
+						muip: $muipInput.val(),
+						uid: uid,
+						cmd: cmd
+					},
+					success: function(data){
+						let retcode = data['retcode'];
+						
+						if(retcode == 0)
+							showNotificationBox('Command executed successfully');
+							
+						if(retcode == 4)
+							showNotificationBox('Command failed, player not online?', false);
+							
+						if(retcode == -1)
+							showNotificationBox('Something is wrong with your command', false);
+							
+						allowInputState(true);
+					}
+				});
+			}
+		});
+		
+		function allowInputState(enabled = true){
+			if(enabled) {
+				// enable all input
+				$('input').prop("disabled", false);
+				
+				// button state
+				$submitBtn.removeClass('is-loading');
+				$submitBtn.prop("disabled", false);
+			} else {
+				// enable all input
+				$('input').prop("disabled", true);
+				
+				// button state
+				$submitBtn.addClass('is-loading');
+				$submitBtn.prop("disabled", true);
+			}
+		}
+		
+		function hideNotificationBox(){
+			$notificationBox.hide(200);
+		}
+		
+		function showNotificationBox(msg, success = true){
+			// reset
+			$notificationBox.removeClass('is-danger');
+			$notificationBox.removeClass('is-primary');
+			
+			// change msg
+			$notificationText.text(msg);
+			
+			// change class
+			if (success){
+				$notificationBox.addClass('is-primary');
+			} else {
+				$notificationBox.addClass('is-danger');
+			}
+			
+			$notificationBox.show(200).delay(5000).hide(200);
+		}
+	</script>
+</body>
+</html>

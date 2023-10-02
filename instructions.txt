@@ -1,0 +1,6 @@
+1. make sure you have docker desktop (obviously since you came from the docker desktop genshin server tutorial)
+2. run this command on powershell in this directory
+
+docker run -d --name genshin_gmwebgui -p 64999:80 -v ${PWD}:/var/www/html php:7.2-apache
+
+on browser, go to localhost:64999
