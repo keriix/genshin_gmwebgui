@@ -15,7 +15,3 @@ There is a GM Handbook as well : https://doc.yuuki.me/GMHandbook
    `docker run -d --name genshin_gmwebgui -p 64999:80 -v ${PWD}:/var/www/html php:7.2-apache`
 
 3. Go to your browser and enter `localhost:64999`
-
-# To-do list
-- Add frequently used commands as buttons
-- Autocomplete for commands
